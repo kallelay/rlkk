@@ -1,0 +1,214 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Regularized Linear Kramers Kronig Demonstration file</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-05"><meta name="DC.source" content="main_file.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Regularized Linear Kramers Kronig Demonstration file</h1><!--introduction--><p>using script mode</p><div><ul><li>Documentation:  Based on frequency vector 'f' and complex-valued impedance spectrum measurement data 'Z'   rLKK reconstruct the "ideal" or "fixed" measurement "Zf"</li></ul></div><div><ul><li>Goal:</li></ul></div><p>(1) if Z and Zf's deviation are small: The measurement data's consistency is validated</p><p>There is a rule of thumb of 1% or 2% for this</p><p>(2) It's possible to use the reconstructed data as "correction" to noise and 'white' distortions (i.e., distortions averaging at 0) This should be done with caution</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Script Mode</a></li><li><a href="#2">Further help (Script mode)</a></li><li><a href="#3">Meta info</a></li></ul></div><h2 id="1">Script Mode</h2><pre class="codeinput">clear
+clf
+
+<span class="comment">% load impedance spectrum, as "Z" and "f"</span>
+load <span class="string">Zimp.mat</span>
+<span class="comment">% Z = re + 1j.* im;</span>
+<span class="comment">% f and Z have same length</span>
+
+
+<span class="comment">% ATTENTION: Make sure to configure fx in the script to your needs</span>
+<span class="comment">% rLKK_do requires that Z and Zf are both existent</span>
+rLKK_do
+
+
+subplot(211)
+hold <span class="string">on</span>
+plot(Z*1e3,<span class="string">'+-'</span>,<span class="string">'DisplayName'</span>,<span class="string">'Measurement'</span>)
+plot(Zf*1e3,<span class="string">'x-'</span>,<span class="string">'DisplayName'</span>,<span class="string">'rLKK reconst.'</span>)
+xlabel(<span class="string">'Real Z in m\Omega'</span>)
+ylabel(<span class="string">'Imag Z in m\Omega'</span>)
+set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>)
+axis <span class="string">equal</span>
+box <span class="string">on</span>
+grid <span class="string">on</span>
+legend(<span class="string">'Location'</span>,<span class="string">'best'</span>)
+
+
+subplot(212)
+hold <span class="string">on</span>
+Zres = (abs(Zf(:)) - abs(Z(:)))./abs(Zf(:)) * 100;
+stem(f,Zres);
+set(gca,<span class="string">'XScale'</span>,<span class="string">'log'</span>)
+grid <span class="string">on</span>; box <span class="string">on</span>;
+plot(f,ones(size(f))*1, <span class="string">'k--'</span>, <span class="string">'DisplayName'</span>,<span class="string">'1% threshold'</span>)
+plot(f,ones(size(f))*-1, <span class="string">'k--'</span>, <span class="string">'DisplayName'</span>,<span class="string">'-1% threshold'</span>)
+<span class="comment">% plot(f,ones(size(f))*1, '--', 'DisplayName','2% threshold')</span>
+<span class="comment">% plot(f,ones(size(f))*-1, '--', 'DisplayName','-2% threshold')</span>
+xlabel(<span class="string">'Frequency in Hz'</span>)
+ylabel(<span class="string">'Deviation in %'</span>)
+legend(<span class="string">'Location'</span>,<span class="string">'best'</span>)
+axis(<span class="string">'padded'</span>)
+</pre><img vspace="5" hspace="5" src="main_file_01.png" alt=""> <h2 id="2">Further help (Script mode)</h2><div><ul><li>Script mode Use:</li></ul></div><div><ul><li>Load Z (complex impedance specturm) and f if you have real and imaginary, construct Z using Z = re + 1j.*im if you have amp and phase, construct Z using Z = amp.*exp(1j.*phase)   phase is in radians, if not then phase = phase / 180 * pi;</li></ul></div><div><ul><li>The DRT frequency (fx) Configure rLKK_do to match your measurement fx should include the measurement frequency</li></ul></div><pre>include infinity frequency in your calculation to avoid
+"series-resistance" effect (Line 21 in rLKK_do)</pre><div><ul><li>Regularization parameter (lambda) larger lambda = data are less reliable due to noise and distortions Typical values: 10^-1 to 10^-2 (1e-2 - 1e-1) for EIS of batteries</li></ul></div><h2 id="3">Meta info</h2><p>Author: Ahmed Yahia Kallel, Measurement and Sensor Technology, Chemnitz Univeristy of Technology</p><p>version-rLKK: version 5 (First public release)</p><p>version-portal: version 1 (First public release)</p><p>Citation:</p><p>[Kallel2021] Kallel, Ahmed Yahia, and Olfa Kanoun. "Regularized linear kramers-kronig transform for consistency check of noisy impedance spectra with logarithmic frequency distribution." 2021 International Workshop on Impedance Spectroscopy (IWIS). IEEE, 2021.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Regularized Linear Kramers Kronig Demonstration file 
+% using script mode
+%
+% * Documentation:
+%  Based on frequency vector 'f' and complex-valued impedance spectrum measurement data 'Z'
+%   rLKK reconstruct the "ideal" or "fixed" measurement "Zf"
+%
+%
+% * Goal:
+%
+% (1) if Z and Zf's deviation are small: The measurement data's consistency is
+% validated
+%
+% There is a rule of thumb of 1% or 2% for this
+%
+%
+% (2) It's possible to use the reconstructed data as "correction" to noise
+% and 'white' distortions (i.e., distortions averaging at 0)
+% This should be done with caution
+%
+
+
+%% Script Mode
+clear
+clf
+
+% load impedance spectrum, as "Z" and "f"
+load Zimp.mat 
+% Z = re + 1j.* im; 
+% f and Z have same length
+
+
+% ATTENTION: Make sure to configure fx in the script to your needs
+% rLKK_do requires that Z and Zf are both existent
+rLKK_do
+
+
+subplot(211)
+hold on
+plot(Z*1e3,'+-','DisplayName','Measurement')
+plot(Zf*1e3,'x-','DisplayName','rLKK reconst.')
+xlabel('Real Z in m\Omega')
+ylabel('Imag Z in m\Omega')
+set(gca,'YDir','reverse')
+axis equal
+box on
+grid on
+legend('Location','best')
+
+
+subplot(212)
+hold on
+Zres = (abs(Zf(:)) - abs(Z(:)))./abs(Zf(:)) * 100;
+stem(f,Zres);
+set(gca,'XScale','log')
+grid on; box on;
+plot(f,ones(size(f))*1, 'kREPLACE_WITH_DASH_DASH', 'DisplayName','1% threshold')
+plot(f,ones(size(f))*-1, 'kREPLACE_WITH_DASH_DASH', 'DisplayName','-1% threshold')
+% plot(f,ones(size(f))*1, 'REPLACE_WITH_DASH_DASH', 'DisplayName','2% threshold')
+% plot(f,ones(size(f))*-1, 'REPLACE_WITH_DASH_DASH', 'DisplayName','-2% threshold')
+xlabel('Frequency in Hz')
+ylabel('Deviation in %')
+legend('Location','best')
+axis('padded')
+
+%% Further help (Script mode)
+%
+% * Script mode Use:
+%
+% *  Load Z (complex impedance specturm) and f
+% if you have real and imaginary, construct Z using Z = re + 1j.*im
+% if you have amp and phase, construct Z using Z = amp.*exp(1j.*phase) 
+%   phase is in radians, if not then phase = phase / 180 * pi;
+% 
+% * The DRT frequency (fx)
+% Configure rLKK_do to match your measurement
+% fx should include the measurement frequency
+%
+%  include infinity frequency in your calculation to avoid
+%  "series-resistance" effect (Line 21 in rLKK_do)
+%
+% * Regularization parameter (lambda)
+% larger lambda = data are less reliable due to noise and distortions
+% Typical values: 10^-1 to 10^-2 (1e-2 - 1e-1) for EIS of batteries
+
+
+%% Meta info
+% Author: Ahmed Yahia Kallel, Measurement and Sensor Technology, Chemnitz
+% Univeristy of Technology
+%
+% version-rLKK: version 5 (First public release)
+%
+% version-portal: version 1 (First public release)
+%
+%
+% Citation:
+%
+% [Kallel2021] Kallel, Ahmed Yahia, and Olfa Kanoun. "Regularized linear kramers-kronig transform for consistency check of noisy impedance spectra with logarithmic frequency distribution." 2021 International Workshop on Impedance Spectroscopy (IWIS). IEEE, 2021.
+
+##### SOURCE END #####
+--></body></html>
