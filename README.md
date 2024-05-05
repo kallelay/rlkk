@@ -1,6 +1,11 @@
 # rlkk
 Regularized Linear Kramers-Kronig (rLKK)
 
+|Folder | Implementation | Info | Version |
+| MATLAB | Matlab (function) | recommended function version | v5 |
+| MATLAB-script | Matlab (script) | for workflows in matlab | v5 |
+| Python | Python + Jupyter | For Python implementations | v5 |
+
 ## Why rLKK?
 rLKK can be used to evaluate the impedance spectrum data. 
 
