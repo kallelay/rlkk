@@ -34,46 +34,6 @@ rLKK must be used with extreme caution otherwise!
 ## Use
 rLKK requires a complex impedance spectrum "Z" and frequency vector "f"
 
-Parameters:
-* Z (array[complex]) – complex-valued impedance spectrum contain (Array N-values)
-
-* f (array[double]) – frequency vector containing N values (Array N-values)
-
-* lambd (double or array[double]) – (Optional) lambd=1e-4: regularization parameter, can be a scalar (regularization value) or a vector (weight vector)
-
-* fx (array[double]) – (Optional) fx=logspace(-8,8,160): DRT Frequency vector M values
-
-
-Returns:
-* Zf: reconstructed impedance spectrum (N values)
-
- Return type:
-array[double]
-
-
-
-Example:
-```
-Zf = rLKK(Z, f) #Calculates Zf based on Z and f
-Zres = (np.abs(Zf) - np.abs(Z)) / np.abs(Zf) * 100 # calculate residuals in percent
-
-#plot residuals, and 1%/-1% threshold
-plt.stem(f, Zres)
-plt.stem(f, Zres1)
-plt.xscale('log')
-plt.grid(True)
-plt.box(True)
-plt.plot(f, np.ones_like(f) * 1, 'k--', label='1% threshold')
-plt.plot(f, np.ones_like(f) * -1, 'k--', label='-1% threshold')
-plt.xlabel('Frequency in Hz')
-plt.ylabel('Deviation in %')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-plt.show()
-
-```
-
-
-
 it uses an internal "DRT frequency vector" (fx) which should be larger than measurement frequency "f" and encapsulate the different phenomena being measured
 
 in addition, it uses a "regularization factor" (lambda): lambda should be around 10^-2 (10^-1 to 10^-6). larger lambda = more distortions and the algorithm should put more effort as measurements aren't reliable

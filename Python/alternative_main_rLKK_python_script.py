@@ -28,12 +28,13 @@ from rLKK import rLKK
 import matplotlib.pyplot as plt
 
 # load impedance spectrum, as "Z" and "f"
+#data = loadmat('C:/Users/Kallel/OneDrive/Documents/GitHub/rlkk/Python/Zimp.mat')
 data = loadmat('Zimp.mat')
 Z = data['Z'].reshape(-1)
 f = data['f'].ravel()
 
 # Using default data (RECOMMENDED)
-Zf = rLKK(Z, f)
+Zf = rLKK(Z, f) #Calculates Zf 
 
 # Using specific lambda and DRT frequency, aggressive rLKK
 lambda_ = 1e10
@@ -42,7 +43,7 @@ Zf1 = rLKK(Z, f, lambda_, fx)
 
 
 # %%
-
+#Using plots, visual test of data correctness is possible (using thresholds)
 plt.figure(figsize=(10, 8))
 plt.plot(Z.real * 1e3, Z.imag * 1e3, '.', label='Measurement')
 plt.plot(Zf.real * 1e3, Zf.imag * 1e3, 'x-', label='rLKK reconst. (1)')

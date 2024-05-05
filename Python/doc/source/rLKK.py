@@ -14,28 +14,20 @@ Kallel, Ahmed Yahia, and Olfa Kanoun. "Regularized linear kramers-kronig transfo
 """""
 
 def rLKK(Z, f ,lambd=1e-4,fx=logspace(-8,8,160)):
-    """
-    rLKK function, constructs ideal impedance spectrum from measurement data
-    Zf = rLKK(Z, f):
-    
-    
-    :param Z: complex-valued impedance spectrum contain (Array N-values)
-    :type Z: array[complex]
-    :param f: frequency vector containing N values (Array N-values)
-    :type f: array[double]
-    
-    
-    :param lambd: (Optional) lambd=1e-4: regularization parameter, can be a scalar (regularization value) or a vector (weight vector)
-    :type lambd: double or array[double]
-    :param fx: (Optional) fx=logspace(-8,8,160): DRT Frequency vector M values
-    :type fx: array[double]
-    
-    :return:  Zf: reconstructed impedance spectrum (N values)
-    :rtype: array[double]
-    
-    
+"""
+rLKK function, constructs ideal impedance spectrum from measurement data
+Zf = rLKK(Z, f):
 
-    """
+Input
+    Z: complex-valued impedance spectrum contain N Re+1i*Im values
+    f: frequency vector containing N values
+    (Optional) lambd=1e-4: regularization parameter, can be a scalar (regularization value) or a vector (weight vector)
+    (Optional) fx=logspace(-8,8,160): DRT Frequency vector M values
+
+Output:
+    Zf: reconstructed impedance spectrum (N values)
+
+"""
     
     # %% weight vectors
     if isinstance(lambd, float): lambd*=ones_like(Z.real)
